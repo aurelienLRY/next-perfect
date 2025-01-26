@@ -29,7 +29,7 @@ Pour chaque fonctionnalité de bonnes pratiques, une branche dédiée est créé
    git checkout -b your-feature-name
    ```
 
-   Exemple : `pwa` pour intégrer les meilleures pratiques liées aux Progressive Web Apps.
+   Exemple : `theme-colors` pour intégrer les meilleures pratiques liées à la gestion des thèmes de couleurs.
 
 2. **Ajouter la fonctionnalité** :
    Implémentez les bonnes pratiques pour la fonctionnalité dans cette branche. Ajoutez des exemples, de la documentation et du code réutilisable.
@@ -55,46 +55,49 @@ Cette organisation permet à chaque fonctionnalité d’évoluer de manière ind
 
 Voici la structure du projet :
 
-```
-NextPerfect/
-├── app/
-│   ├── (public-pages)/
+```plaintext
+my-next-app/
+├── src/
+│   ├── app/
+│   │   ├── (public-pages)/
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── (protected-pages)/
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── api/
+│   │   │   └── users/
+│   │   │       └── route.ts
 │   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── (protected-pages)/
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── api/
+│   │   ├── page.tsx
+│   │   ├── error.tsx
+│   │   ├── loading.tsx
+│   │   └── global-error.tsx
+│   ├── components/
+│   │   ├── ui/
+│   │   │   └── Button.tsx
+│   │   ├── layout/
+│   │   │   └── Header.tsx
+│   │   └── shared/
+│   │       └── Card.tsx
+│   ├── context/
+│   │   └── AuthContext.tsx
+│   ├── hooks/
+│   │   └── useAuth.ts
+│   ├── lib/
+│   │   ├── db.ts
+│   │   ├── auth.ts
 │   │   └── ...
-│   ├── layout.tsx
-│   ├── page.tsx
-│   ├── error.tsx
-│   ├── loading.tsx
-│   └── global-error.tsx
-├── components/
-│   ├── ui/
-│   │   └── Button.tsx
-│   └── ...
-├── lib/
-│   ├── db.ts
-│   ├── auth.ts
-│   └── ...
-├── hooks/
-│   ├── useAuth.ts
-│   └── ...
-├── context/
-│   ├── AuthContext.tsx
+│   ├── styles/
+│   │   └── globals.css
 │   └── ...
 ├── public/
 │   ├── images/
 │   └── ...
-├── styles/
-│   ├── globals.css
-│   └── ...
 ├── tests/
 │   ├── unit/
 │   ├── integration/
-│   └── ...
+│   └── e2e/
 ├── next.config.js
 ├── package.json
 └── tsconfig.json
@@ -102,99 +105,130 @@ NextPerfect/
 
 ### Détails des Dossiers
 
-#### **app/**
+#### **src/app/**
 
 - **(public-pages)** : Pages accessibles à tous les utilisateurs.
 - **(protected-pages)** : Pages nécessitant une authentification.
 - **api/** : Routes API pour gérer les endpoints RESTful.
+  - Exemple : `src/app/api/users/route.ts` pour gérer les requêtes sur `/api/users`.
 - **layout.tsx** : Définit le layout global (header, footer, providers).
+- **page.tsx** : Définit la page d'accueil.
 - **error.tsx** : Gestion des erreurs locales.
 - **loading.tsx** : Gestion des états de chargement.
+- **global-error.tsx** : Gestion des erreurs globales.
 
-#### **components/**
+#### **src/components/**
 
 - **ui/** : Composants UI réutilisables (ex. : boutons, formulaires).
+- **layout/** : Composants liés à l'architecture (header, footer).
+- **shared/** : Composants partagés comme les cartes, badges, etc.
 
-#### **lib/**
+#### **src/lib/**
 
 - Fonctions utilitaires pour la logique métier (ex. : `auth.ts`, `db.ts`).
 
-#### **hooks/**
+#### **src/hooks/**
 
 - Hooks React personnalisés (ex. : `useAuth.ts`).
 
-#### **context/**
+#### **src/context/**
 
 - Providers React pour l'état global (ex. : `AuthContext.tsx`).
 
+#### **src/styles/**
+
+- Fichiers CSS ou SCSS globaux.
+
+#### **public/**
+
+- Contient les fichiers statiques comme les images et les favicons.
+
 #### **tests/**
 
-- Séparation des tests unitaires, d’intégration et E2E.
+- **unit/** : Tests unitaires des composants.
+- **integration/** : Tests d'intégration.
+- **e2e/** : Tests de bout en bout.
 
 ---
 
 ## Conventions de Nommage
 
-- **Dossiers** : `kebab-case` (ex. : `public-pages`).
-- **Composants** : `PascalCase` (ex. : `Navbar.tsx`).
-- **Variables** : `camelCase` (ex. : `const userName`).
-- **Types** : `PascalCase` (ex. : `interface User {}`).
+### Fichiers et Dossiers
+
+- **Dossiers pour les pages** : Utilisez le **kebab-case** (ex. : `(public-pages)`).
+- **Fichiers** : Utilisez le **PascalCase** pour les composants (ex. : `Button.tsx`).
+- **Variables** :
+  - Variables locales en **camelCase** (ex. : `userName`).
+  - Variables globales en **MAJUSCULES_AVEC_UNDERSCORE** (ex. : `API_URL`).
+- **Server Actions** :
+  - Fonctions en **camelCase** avec des noms descriptifs (ex. : `getUserData`).
+  - Fichiers en **camelCase** (ex. : `fetchUsers.ts`).
+
+### Types TypeScript
+
+- Interfaces et types en **PascalCase** (ex. : `interface User { id: number; name: string; }`).
 
 ---
 
 ## Bonnes Pratiques
 
-1. **Architecture modulaire** : Séparez clairement les responsabilités (UI, hooks, API, etc.).
-2. **TypeScript** : Adoptez un typage strict pour éviter les erreurs.
-3. **Tailwind CSS** : Regroupez les classes utilitaires pour une lisibilité accrue.
-4. **Accessibilité** : Respectez les normes a11y (attributs ARIA, etc.).
-5. **Gestion des erreurs** : Centralisez le traitement des erreurs dans les layouts.
-6. **Tests** : Priorisez les tests unitaires et d’intégration pour garantir la stabilité.
+1. **Structure modulaire** : Regroupez les fonctionnalités connexes dans des dossiers dédiés.
+2. **TypeScript** : Typage strict pour éviter les erreurs.
+3. **Tailwind CSS** : Utilisez des classes utilitaires pour une meilleure lisibilité.
+4. **Accessibilité** : Respectez les normes a11y (ex. : `aria-label`).
+5. **Gestion des erreurs** : Centralisez les erreurs pour un meilleur debugging.
+6. **Tests** : Organisez vos tests en dossiers `unit`, `integration` et `e2e`.
 
 ---
 
-## Outils et Configuration
+## Commandes de Développement
 
-### 1. ESLint et Prettier
+### Installation des Dépendances
 
-- Configuration ESLint :
-  ```json
-  {
-    "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"]
-  }
-  ```
+```bash
+npm install
+```
 
-### 2. Tailwind CSS
+### Lancer le Serveur de Développement
 
-- Exemple de configuration (`tailwind.config.js`) :
-  ```javascript
-  module.exports = {
-    content: ["./app/**/*.{js,ts,jsx,tsx}"],
-    theme: {
-      extend: {},
-    },
-    plugins: [],
-  };
-  ```
+```bash
+npm run dev
+```
 
-### 3. Tests
+### Générer une Version de Production
 
-- **Jest** pour les tests unitaires.
-- **Cypress** ou **Playwright** pour les tests E2E.
+```bash
+npm run build
+```
+
+### Lancer les Tests
+
+```bash
+npm test
+```
 
 ---
 
-## Comment Contribuer
+## Contribution
 
-1. Forkez le dépôt.
-2. Créez une branche : `git checkout -b feature/awesome-feature`.
-3. Commitez vos modifications : `git commit -m 'Add awesome feature'`.
-4. Poussez la branche : `git push origin feature/awesome-feature`.
-5. Soumettez une Pull Request.
+1. Forkez ce dépôt.
+2. Créez une nouvelle branche :
+   ```bash
+   git checkout -b your-feature-name
+   ```
+3. Faites vos modifications et commitez :
+   ```bash
+   git commit -m "Add awesome feature"
+   ```
+4. Poussez la branche :
+   ```bash
+   git push origin your-feature-name
+   ```
+5. Ouvrez une Pull Request.
 
 ---
 
-## License
+## Licence
 
 Ce projet est sous licence **MIT**.
 
@@ -202,4 +236,4 @@ Ce projet est sous licence **MIT**.
 
 ## Contact
 
-Pour toute question ou suggestion, n'hésitez pas à ouvrir une issue ou à me contacter par email : **[leroyaurelien11@gmail.com](mailto:leroyaurelien11@gmail.com)**.
+Pour toute question, contactez-nous à **leroyaurelien11@gmail.com**.
