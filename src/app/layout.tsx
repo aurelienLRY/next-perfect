@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
+import { PWAInstallPrompt } from "@/components/ui/PWAInstallPrompt";
+export { metadata, viewport } from "./metadata";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -11,12 +12,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-export const metadata: Metadata = {
-  title: "Next Perfect",
-  description:
-    "projet conçu pour regrouper et illustrer les meilleures pratiques en matière de développement avec Next.js 15, TypeScript, et Tailwind CSS.",
-};
 
 export default function RootLayout({
   children,
@@ -29,6 +24,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <PWAInstallPrompt />
       </body>
     </html>
   );
