@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback } from "react";
 import Image from "next/image";
 
 import { usePWA } from "@/hooks/usePWA"; // Import du hook PWA
@@ -14,23 +14,21 @@ export function PWAInstallPrompt() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
+  // Utiliser un layout effect pour éviter le flash
+  useLayoutEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const handleInstall = async () => {
+  // Mémoriser les handlers
+  const handleInstall = useCallback(async () => {
     await promptInstall();
-  };
+  }, [promptInstall]);
 
-  const handleDismiss = () => {
+  const handleDismiss = useCallback(() => {
     setIsDismissed(true);
-  };
+  }, []);
 
-  // Ne rien rendre pendant le montage initial
-  if (!isMounted) return null;
-
-  // Ne rien rendre si l'installation n'est pas possible ou si l'invite a été rejetée
-  if (!isInstallable || isDismissed) return null;
+  if (!isMounted || !isInstallable || isDismissed) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 z-50">

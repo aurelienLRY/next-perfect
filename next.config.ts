@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-import withPWA from "next-pwa";
+import withPWA from "@ducanh2912/next-pwa";
 
 const nextConfig = {
   reactStrictMode: true,
@@ -7,7 +7,5 @@ const nextConfig = {
 
 export default withPWA({
   dest: "public",
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === "development",
+  customWorkerSrc: "src/lib/services/worker",
 })(nextConfig);

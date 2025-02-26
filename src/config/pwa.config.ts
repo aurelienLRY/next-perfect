@@ -11,8 +11,8 @@ export const pwaConfig = {
 
   // Temporisation et fréquence
   promptDelay: 1000, // Délai avant d'afficher l'invite (en millisecondes)
-  maxPrompts: 2, // Nombre maximum de fois où l'invite peut être affichée
-  promptInterval: 24, // Durée minimale entre deux invites (en heures)
+  maxPrompts: 3, // Nombre maximum de fois que le prompt sera affiché
+  promptInterval: 24 * 60 * 60 * 1000, // 24 heures en millisecondes
 
   // Textes de l'invite d'installation
   messages: {

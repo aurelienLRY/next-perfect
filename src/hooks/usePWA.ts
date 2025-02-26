@@ -24,11 +24,33 @@ const getInitialState = (): PWAStatus => ({
   lastPromptTime: null,
 });
 
+// Ajouter cette fonction avant le hook usePWA
+const checkPromptConditions = (status: PWAStatus): boolean => {
+  if (!pwaConfig.customInstallPrompt) return false;
+
+  const now = Date.now();
+  const timeSinceLastPrompt = status.lastPromptTime
+    ? now - status.lastPromptTime
+    : Infinity;
+
+  // Vérifier si on a dépassé le nombre maximum de prompts
+  if (status.promptCount >= pwaConfig.maxPrompts) {
+    return false;
+  }
+
+  // Vérifier si assez de temps s'est écoulé depuis le dernier prompt
+  if (timeSinceLastPrompt < pwaConfig.promptInterval) {
+    return false;
+  }
+
+  return true;
+};
+
 export function usePWA() {
   const [status, setStatus] = useState<PWAStatus>(getInitialState());
   const [isClient, setIsClient] = useState(false);
 
-  // Marquer que nous sommes côté client
+  // Effet pour l'initialisation côté client
   useEffect(() => {
     setIsClient(true);
 
@@ -48,46 +70,20 @@ export function usePWA() {
     }
   }, []);
 
-  // Sauvegarder l'état dans le localStorage
-  useEffect(() => {
-    if (!isClient) return;
-
-    const stateToSave = {
-      promptCount: status.promptCount,
-      lastPromptTime: status.lastPromptTime,
-    };
-    localStorage.setItem(PWA_STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [isClient, status.promptCount, status.lastPromptTime]);
-
+  // Effet séparé pour la gestion des événements PWA
   useEffect(() => {
     if (!isClient || !pwaConfig.customInstallPrompt) return;
 
-    // Vérifier si l'app est déjà installée
     const isInstalled = window.matchMedia("(display-mode: standalone)").matches;
-    if (isInstalled) {
+
+    // Mettre à jour l'état installé sans déclencher de re-render en boucle
+    if (isInstalled && !status.isInstalled) {
       setStatus((prev) => ({ ...prev, isInstalled }));
     }
 
-    // Vérifier si on peut afficher l'invite
-    const checkPromptConditions = (currentStatus: PWAStatus): boolean => {
-      if (!pwaConfig.customInstallPrompt) return false;
-      if (currentStatus.promptCount >= pwaConfig.maxPrompts) return false;
-
-      if (currentStatus.lastPromptTime) {
-        const hoursSinceLastPrompt =
-          (Date.now() - currentStatus.lastPromptTime) / (1000 * 60 * 60);
-        if (hoursSinceLastPrompt < pwaConfig.promptInterval) return false;
-      }
-
-      return true;
-    };
-
-    // Écouter l'événement beforeinstallprompt
     const handleInstallPrompt = (e: Event) => {
       e.preventDefault();
-      const canPrompt = checkPromptConditions(status);
-
-      if (canPrompt) {
+      if (checkPromptConditions(status)) {
         setTimeout(() => {
           setStatus((prev) => ({
             ...prev,
@@ -98,7 +94,6 @@ export function usePWA() {
       }
     };
 
-    // Écouter l'événement appinstalled
     const handleAppInstalled = () => {
       setStatus((prev) => ({
         ...prev,
@@ -115,6 +110,17 @@ export function usePWA() {
       window.removeEventListener("beforeinstallprompt", handleInstallPrompt);
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
+  }, [isClient]); // Dépendance uniquement sur isClient
+
+  // Effet séparé pour la sauvegarde dans le localStorage
+  useEffect(() => {
+    if (!isClient) return;
+
+    const stateToSave = {
+      promptCount: status.promptCount,
+      lastPromptTime: status.lastPromptTime,
+    };
+    localStorage.setItem(PWA_STORAGE_KEY, JSON.stringify(stateToSave));
   }, [isClient, status.promptCount, status.lastPromptTime]);
 
   const promptInstall = async () => {
